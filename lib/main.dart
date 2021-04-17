@@ -1,0 +1,47 @@
+import 'package:eco/Views/school.dart';
+import 'package:eco/services/googlesignin/authmethods.dart';
+import 'package:eco/Views/LandingPage.dart';
+import 'package:eco/widgets/connectiontest.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setEnabledSystemUIOverlays([]);
+  SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(statusBarColor: Colors.green[600]));
+  ConnectionStatusSingleton connectionStatus =
+      ConnectionStatusSingleton.getInstance();
+  connectionStatus.initialize();
+
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  AuthMethods _repository = AuthMethods();
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "eco_app",
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(brightness: Brightness.dark),
+      home: FutureBuilder(
+        future: _repository.getCurrentUser(),
+        builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
+          if (snapshot.hasData) {
+            return LandingPage();
+          } else {
+            return Schools();
+          }
+        },
+      ),
+    );
+  }
+}
